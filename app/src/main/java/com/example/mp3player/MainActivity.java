@@ -20,6 +20,7 @@ public class MainActivity extends AppCompatActivity {
     private int[] resId = {R.raw.mp3_0, R.raw.mp3_1, R.raw.mp3_2, R.raw.mp3_3};
     MediaPlayer mediaPlayer = null;
     private Button pauseBtn, stopBtn;
+    private boolean pause = false, isComplete;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,6 +51,17 @@ public class MainActivity extends AppCompatActivity {
         mediaPlayer = MediaPlayer.create(this, resId[index]);
         mediaPlayer.setLooping(false);
         mediaPlayer.start();
+        pause = false;
+
+        mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer mp) {
+                isComplete = true;
+                pause = false;
+                pauseBtn.setText(R.string.play);
+                Toast.makeText(MainActivity.this,"Finish",Toast.LENGTH_LONG);
+            }
+        });
 
     }
 
@@ -63,7 +75,20 @@ public class MainActivity extends AppCompatActivity {
         pauseBtn = findViewById(R.id.pause_btn);
         stopBtn = findViewById(R.id.stop_btn);
 
-
+        stopBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(mediaPlayer==null){
+                    return;
+                }
+                pause = false;
+                isComplete = false;
+                pauseBtn.setText(R.string.play);
+                mediaPlayer.stop();
+                mediaPlayer.release();
+                mediaPlayer = null;
+            }
+        });
 
         pauseBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -72,6 +97,26 @@ public class MainActivity extends AppCompatActivity {
                     return;
                 }
 
+                if (isComplete) {
+                    pause = false;
+                    isComplete = false;
+                    pauseBtn.setText(R.string.pause);
+                    mediaPlayer.start();
+                    return;
+                }
+
+                pause = !pause;
+
+                if (!pause) {
+                    pauseBtn.setText(R.string.pause);
+                } else {
+                    pauseBtn.setText(R.string.resume);
+                }
+                if (pause && mediaPlayer.isPlaying()) {
+                    mediaPlayer.pause();
+                    return;
+                }
+                mediaPlayer.start();
             }
         });
 
