@@ -2,6 +2,7 @@ package com.example.mp3player;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.util.Log;
@@ -17,7 +18,7 @@ public class MainActivity extends AppCompatActivity {
 
     private ListView mp3List;
     private String[] mp3name = {"我們不一樣", "是我太傻", "飛鳥旋空", "散了就散了"};
-    private int[] resId = {R.raw.mp3_0, R.raw.mp3_1, R.raw.mp3_2, R.raw.mp3_3};
+    private String[] resId = {String.valueOf(R.raw.mp3_0),String.valueOf(R.raw.mp3_1), String.valueOf(R.raw.mp3_2), String.valueOf(R.raw.mp3_3)};
     MediaPlayer mediaPlayer = null;
     private Button pauseBtn, stopBtn;
     private boolean pause = false, isComplete;
@@ -34,8 +35,17 @@ public class MainActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 TextView textView = view.findViewById(view.getId());
                 Log.d("MainActivity", textView.getText().toString());
+                //Toast.makeText(MainActivity.this, mp3name[position], Toast.LENGTH_SHORT).show();
+                //playMusic(position);
+
+                Intent intent=new Intent(MainActivity.this,PlayerActivity.class);
+                Bundle bundle=new Bundle();
+                bundle.putString("mp3name",mp3name[position]);
+                bundle.putString("mp3index",resId[position]);
+                bundle.putInt("mp3no",position);
+                intent.putExtras(bundle);
+                startActivity(intent);
                 Toast.makeText(MainActivity.this, mp3name[position], Toast.LENGTH_SHORT).show();
-                playMusic(position);
             }
         });
 
@@ -48,10 +58,11 @@ public class MainActivity extends AppCompatActivity {
             mediaPlayer.release();
             mediaPlayer = null;
         }
-        mediaPlayer = MediaPlayer.create(this, resId[index]);
+        mediaPlayer = MediaPlayer.create(this, Integer.valueOf(resId[index]));
         mediaPlayer.setLooping(false);
         mediaPlayer.start();
         pause = false;
+        pauseBtn.setText(R.string.pause);
 
         mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
@@ -59,10 +70,9 @@ public class MainActivity extends AppCompatActivity {
                 isComplete = true;
                 pause = false;
                 pauseBtn.setText(R.string.play);
-                Toast.makeText(MainActivity.this,"Finish",Toast.LENGTH_LONG);
+                Toast.makeText(MainActivity.this,"Finish",Toast.LENGTH_LONG).show();
             }
         });
-
     }
 
     private void setData() {

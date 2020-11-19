@@ -5,4 +5,5 @@
     <string name="stop">停止</string>
     <string name="resume">播放</string>
     <string name="play">播放</string>
+    <string name="mp3_name">音樂名稱</string>
 </resources>
