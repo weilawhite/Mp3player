@@ -2,14 +2,19 @@ package com.example.mp3player;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.os.Environment;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import java.io.IOException;
 
 public class PlayerActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -20,6 +25,7 @@ public class PlayerActivity extends AppCompatActivity implements View.OnClickLis
     private String mp3name, mp3index;
     MediaPlayer mediaPlayer = null;
     boolean pause;
+    private boolean readFromSD;
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
@@ -57,9 +63,7 @@ public class PlayerActivity extends AppCompatActivity implements View.OnClickLis
                     public void run() {
                         playBtn.setEnabled(true);
                         stopBtn.setEnabled(true);
-                        playMusic(Integer.valueOf(mp3index));
-
-
+                        playMusic(mp3index);
                     }
                 });
             }
@@ -78,12 +82,28 @@ public class PlayerActivity extends AppCompatActivity implements View.OnClickLis
         }
     }
 
-    public void playMusic(int index) {
+    public void playMusic(String index) {
 
         stopMusic();
-        mediaPlayer = MediaPlayer.create(this, Integer.valueOf(mp3index));
-        mediaPlayer.setLooping(false);
-        mediaPlayer.start();
+
+
+        if (readFromSD) {
+            mediaPlayer = new MediaPlayer();
+            try {
+                mediaPlayer.setDataSource(mp3index);
+                mediaPlayer.prepare();
+                mediaPlayer.setLooping(false);
+                mediaPlayer.start();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+        } else {
+            mediaPlayer = MediaPlayer.create(this, Integer.valueOf(mp3index));
+            mediaPlayer.setLooping(false);
+            mediaPlayer.start();
+        }
+
         playBtn.setImageResource(R.drawable.music_pause);
 
         mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
@@ -95,6 +115,12 @@ public class PlayerActivity extends AppCompatActivity implements View.OnClickLis
 
             }
         });
+    }
+
+    private Bitmap getBitmapFromSDCard(String file) {
+        String sd = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).toString();
+        Bitmap bitmap = BitmapFactory.decodeFile(sd + "/" + file + ".jpg");
+        return bitmap;
     }
 
     private void findView() {
@@ -109,8 +135,18 @@ public class PlayerActivity extends AppCompatActivity implements View.OnClickLis
         Bundle bundle = getIntent().getExtras();
         mp3name = bundle.getString("mp3name");
         mp3index = bundle.getString("mp3index");
+        readFromSD = bundle.getBoolean("readFromSD");
         int mp3no = bundle.getInt("mp3no");
         titleText.setText(mp3no + " - " + mp3name);
+
+
+        //在這修改顯示圖片
+        Bitmap image = getBitmapFromSDCard(mp3name);
+        if(image!=null){
+            titleImg.setImageBitmap(image);
+        }else {
+            titleImg.setImageResource(R.drawable.title);
+        }
 
     }
 
@@ -118,7 +154,7 @@ public class PlayerActivity extends AppCompatActivity implements View.OnClickLis
     public void onClick(View v) {
         if (v.getId() == R.id.play_btn) {
             if (mediaPlayer == null) {
-                playMusic(Integer.valueOf(mp3index));
+                playMusic(mp3index);
                 return;
             }
 

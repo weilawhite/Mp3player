@@ -6,4 +6,7 @@
     <string name="resume">播放</string>
     <string name="play">播放</string>
     <string name="mp3_name">音樂名稱</string>
+    <string name="read">讀取</string>
+    <string name="author_done">已授權</string>
+    <string name="author_fail">認證失敗</string>
 </resources>
