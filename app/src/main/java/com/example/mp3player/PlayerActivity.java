@@ -7,19 +7,19 @@ import android.graphics.BitmapFactory;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Environment;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.io.IOException;
 
 public class PlayerActivity extends AppCompatActivity implements View.OnClickListener {
 
 
-    private TextView titleText;
+    private TextView titleText, startTimeText, endTimeText;
     private ImageView titleImg;
     private ImageButton playBtn, stopBtn;
     private String mp3name, mp3index;
@@ -63,7 +63,7 @@ public class PlayerActivity extends AppCompatActivity implements View.OnClickLis
                     public void run() {
                         playBtn.setEnabled(true);
                         stopBtn.setEnabled(true);
-                        playMusic(mp3index);
+                        playMusic();
                     }
                 });
             }
@@ -82,7 +82,7 @@ public class PlayerActivity extends AppCompatActivity implements View.OnClickLis
         }
     }
 
-    public void playMusic(String index) {
+    public void playMusic() {
 
         stopMusic();
 
@@ -129,6 +129,9 @@ public class PlayerActivity extends AppCompatActivity implements View.OnClickLis
         playBtn = findViewById(R.id.play_btn);
         stopBtn = findViewById(R.id.stop_btn);
 
+        startTimeText = findViewById(R.id.start_text);
+        endTimeText = findViewById(R.id.end_text);
+
         playBtn.setOnClickListener(this);
         stopBtn.setOnClickListener(this);
 
@@ -142,10 +145,12 @@ public class PlayerActivity extends AppCompatActivity implements View.OnClickLis
 
         //在這修改顯示圖片
         Bitmap image = getBitmapFromSDCard(mp3name);
-        if(image!=null){
+        if (image != null) {
             titleImg.setImageBitmap(image);
-        }else {
+            Log.d("PlayerActivity", " OK ");
+        } else {
             titleImg.setImageResource(R.drawable.title);
+            Log.w("PlayerActivity", " NO IMAGE ");
         }
 
     }
@@ -154,7 +159,7 @@ public class PlayerActivity extends AppCompatActivity implements View.OnClickLis
     public void onClick(View v) {
         if (v.getId() == R.id.play_btn) {
             if (mediaPlayer == null) {
-                playMusic(mp3index);
+                playMusic();
                 return;
             }
 

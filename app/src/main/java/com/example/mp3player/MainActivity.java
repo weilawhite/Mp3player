@@ -63,7 +63,7 @@ public class MainActivity extends AppCompatActivity {
                 Bundle bundle = new Bundle();
                 bundle.putString("mp3name", mp3name[position]);
                 bundle.putString("mp3index", resId[position]);
-                bundle.putBoolean("readFromSD",readFromSD);
+                bundle.putBoolean("readFromSD", readFromSD);
                 bundle.putInt("mp3no", position);
                 intent.putExtras(bundle);
                 startActivity(intent);
@@ -124,7 +124,10 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public boolean accept(File pathname, String filename) {
                 for (int i = 0; i < filter.length; i++) {
-                    if (filename.indexOf(filter[i]) != 1) return true;
+                    if (filename.toLowerCase().endsWith(filter[i])) {
+                        return true;
+                    }
+                    //if (filename.indexOf(filter[i]) != 1) return true;
                 }
                 return false;
             }
@@ -146,6 +149,7 @@ public class MainActivity extends AppCompatActivity {
             String filename = file.getName();
             String absolutePath = file.getAbsolutePath();
             String name = filename.substring(0, filename.indexOf("."));
+            //String name = file.getName();
             mp3name[count] = name;
             resId[count] = absolutePath;
             count++;
